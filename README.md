@@ -1,110 +1,112 @@
-<<<<<<< HEAD
-# ✅ QUICK START - Your FarmAI Backend is Now Ready!
+# 🌾 FarmAI — Smart Crop & Disease Prediction System
 
-## **The Problem Was:**
-Your HTML files were trying to connect to a FastAPI backend that wasn't running, and the necessary Python packages weren't installed.
-
-## **What I Fixed:**
-
-### 1. **Created `requirements.txt`**
-   - Listed all required Python packages
-   - Includes FastAPI, Uvicorn, SQLAlchemy, scikit-learn, and more
-
-### 2. **Installed All Dependencies**
-   - FastAPI (web framework)
-   - Uvicorn (ASGI server)
-   - All ML, database, and security libraries
-
-### 3. **Enhanced `crop.py`**
-   - Added routes to serve HTML files directly from the backend
-   - Added `FileResponse` import for proper HTML serving
-   - Now supports accessing `/`, `/login-page`, `/register-page`, etc.
-
-### 4. **Created New Startup Scripts**
-   - **`start_farmai.bat`** - Batch file for Windows (double-click to run)
-   - **`run_server.ps1`** - PowerShell script alternative
-   - Both handle dependency installation automatically
-
-### 5. **Created `SETUP_GUIDE.md`**
-   - Complete documentation of your project
-   - Troubleshooting guide
-   - API endpoint documentation
+FarmAI is an AI-powered agricultural assistant that helps farmers make data-driven decisions. It recommends the best crops based on soil and climate conditions, detects plant diseases from leaf images, and suggests fertilizers — all through a clean web interface.
 
 ---
 
-## **🚀 How to Start Your App Now:**
+## Features
 
-### **Option A: Windows Batch File (Easiest)**
-```
-Double-click: start_farmai.bat
-```
-✓ Automatically starts backend  
-✓ Opens browser to http://127.0.0.1:8000  
-✓ Install dependencies if needed  
+- Crop Recommendation — predicts the best crop based on N, P, K, temperature, humidity, pH, and rainfall
+- Disease Detection — analyzes plant leaf images and suggests treatment
+- Fertilizer Suggestion — recommends fertilizers based on soil nutrient levels
+- User Authentication — register, login, change password, and manage profile
+- History Tracking — saves crop and disease prediction history per user
+- PWA Support — installable as an Android app via the included manifest
 
-### **Option B: PowerShell Script**
-```powershell
-.\run_server.ps1
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | FastAPI (Python) |
+| ML Model | Random Forest (scikit-learn) |
+| Database | SQLite via SQLAlchemy |
+| Auth | Passlib + bcrypt |
+| Frontend | HTML, CSS, JavaScript |
+| Server | Uvicorn (ASGI) |
+
+---
+
+## Project Structure
+
+```
+FarmAi/
+├── crop.py                  # Main FastAPI backend
+├── crop_model.joblib        # Trained ML model
+├── Crop_recommendation/     # Training dataset (CSV)
+├── logo/                    # App images and backgrounds
+├── static/uploads/          # User profile pictures
+├── android_app/             # PWA version for Android
+├── android_native/          # Native Android wrapper
+├── *.html                   # Frontend pages
+├── requirements.txt         # Python dependencies
+└── start_farmai.bat         # One-click Windows launcher
 ```
 
-### **Option C: Manual Command**
+---
+
+## Getting Started
+
+### Prerequisites
+- Python 3.9+
+- pip
+
+### Installation
+
 ```bash
+# Clone the repository
+git clone https://github.com/Bhavishaya789/FarmAi.git
+cd FarmAi
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the server
 python -m uvicorn crop:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Then open: **http://127.0.0.1:8000** in your browser
+Then open your browser at: **http://127.0.0.1:8000**
+
+### Windows Quick Start
+Just double-click `start_farmai.bat` — it handles everything automatically.
 
 ---
 
-## **Key Changes Made:**
+## API Endpoints
 
-| File | Change |
-|------|--------|
-| `requirements.txt` | ✨ Created - Lists all dependencies |
-| `crop.py` | ✏️ Added HTML serving routes + FileResponse import |
-| `start_farmai.bat` | ✏️ Updated - Better error handling and auto-installer |
-| `start_farmui.bat` | ℹ️ Original file (can delete if using new scripts) |
-| `SETUP_GUIDE.md` | ✨ Created - Full documentation |
-
----
-
-## **Why the Error Occurred:**
-
-❌ **Before:**
-1. HTML files opened as `file://` (direct file access)
-2. Backend not running
-3. Python packages not installed
-4. CORS issues from mixing `file://` with `http://`
-
-✅ **Now:**
-1. Backend serves HTML files via HTTP
-2. All dependencies installed
-3. Proper FastAPI CORS middleware enabled
-4. Single access point: **http://127.0.0.1:8000**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/predict` | Crop recommendation |
+| POST | `/predict-disease` | Plant disease detection |
+| POST | `/predict-fertilizer` | Fertilizer suggestion |
+| POST | `/register` | User registration |
+| POST | `/login` | User login |
+| POST | `/change-password` | Change password |
+| GET | `/get-user-history/{username}` | Fetch prediction history |
 
 ---
 
-## **Testing Tips:**
+## ML Model
 
-1. Run the startup script → Backend should start on port 8000
-2. Check for "Application startup complete" message
-3. Open http://127.0.0.1:8000 in browser
-4. Open browser DevTools (F12) to check Console tab for errors
-
----
-
-## **If You Still See Errors:**
-
-1. **"Is the backend running?"** → Check if backend terminal is open and shows "Running on..."
-2. **Loss of connectivity** → Restart the backend
-3. **Port 8000 already in use** → Kill process: `netstat -ano | findstr :8000`
+- Algorithm: Random Forest Classifier
+- Dataset: [Crop Recommendation Dataset](Crop_recommendation/Crop_recommendation.csv)
+- Features: Nitrogen, Phosphorus, Potassium, Temperature, Humidity, pH, Rainfall
+- Output: Top-N crop suggestions with confidence scores
 
 ---
 
-## **Files You Can Delete (Optional):**
-- `start_farmui.bat` - Old startup script (replaced by `start_farmai.bat`)
+## Team
 
-**Your backend is ready! 🚀 Start it and visit http://127.0.0.1:8000**
-=======
-# FarmAi
->>>>>>> f850aa89a1e431d1fb395a172797f7852671521e
+| Name | Roll Number |
+|------|-------------|
+| Bhavishya Kumar | 0251BTCS042 |
+| Atharv Pandey | 0251BTCS048 |
+| Dipanshu | 0251BTCS140 |
+| Aditya Singh | 0251BTCS081 |
+
+---
+
+## License
+
+This project is built for academic purposes.
