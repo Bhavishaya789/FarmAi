@@ -1,112 +1,46 @@
 <!DOCTYPE html>
 <html lang="en" class="dark scroll-smooth">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FarmAI | Register</title>
     <link rel="icon" type="image/png" href="logo/logo.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                        display: ['Outfit', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            500: '#10b981',
-                            600: '#059669',
-                        },
-                        deep: '#020617'
-                    }
-                }
-            }
+            theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans','sans-serif'], display: ['Outfit','sans-serif'] }, colors: { brand: { 500: '#10b981', 600: '#059669' }, deep: '#020617' } } }
         }
     </script>
     <style>
-        body {
-            background-color: #020617;
-        }
-
-        .input-field {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .input-field:focus {
-            border-color: #10b981;
-            background: rgba(30, 41, 59, 0.8);
-            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
-        }
-
-        .hero-img {
-            background-image: url('logo/farmer_bg.png');
-            background-size: cover;
-            background-position: center;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-fadeIn {
-            animation: fadeIn 0.8s ease-out forwards;
-        }
+        body { background-color: #020617; }
+        .input-field { background: rgba(30,41,59,0.5); border: 1px solid rgba(148,163,184,0.1); transition: all 0.3s ease; }
+        .input-field:focus { border-color: #10b981; background: rgba(30,41,59,0.8); box-shadow: 0 0 0 4px rgba(16,185,129,0.1); }
+        .btn-primary { background: linear-gradient(135deg,#10b981 0%,#059669 100%); transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(16,185,129,0.4); }
+        .hero-img { background-image: url('logo/farmer_bg.png'); background-size: cover; background-position: center; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        .animate-fadeIn { animation: fadeIn 0.8s ease-out forwards; }
+        .strength-bar { height: 4px; border-radius: 2px; transition: all 0.3s; }
     </style>
 </head>
-
 <body class="min-h-screen flex font-sans text-slate-200">
 
-    <!-- Left Side Content -->
     <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden hero-img">
         <div class="absolute inset-0 bg-gradient-to-t from-deep via-transparent to-transparent opacity-80"></div>
         <div class="absolute bottom-12 left-12 max-w-lg animate-fadeIn">
-            <h2 class="font-display text-5xl font-bold text-white mb-6 leading-tight">
-                Harvest the Power of <span class="text-brand-500">Knowledge</span>.
-            </h2>
-            <p class="text-slate-300 text-lg leading-relaxed">
-                Start your journey towards a more productive farm. Get personalized insights based on your specific
-                environmental data.
-            </p>
+            <h2 class="font-display text-5xl font-bold text-white mb-6 leading-tight">Harvest the Power of <span class="text-brand-500">Knowledge</span>.</h2>
+            <p class="text-slate-300 text-lg leading-relaxed">Start your journey towards a more productive farm with AI-powered insights.</p>
         </div>
     </div>
 
-    <!-- Right Side: Register Form -->
     <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 bg-deep overflow-y-auto">
         <div class="w-full max-w-md animate-fadeIn my-12">
-
             <div class="mb-10 text-center flex flex-col items-center">
-                <div
-                    class="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center border border-brand-500/20 mb-4 p-2">
+                <div class="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center border border-brand-500/20 mb-4 p-2">
                     <img src="logo/logo.png" alt="FarmAI" class="w-full h-full object-contain">
                 </div>
                 <h1 class="font-display text-4xl font-bold tracking-tight text-white mb-2">Create Account</h1>
@@ -114,175 +48,225 @@
             </div>
 
             <form id="registerForm" class="space-y-4">
+                <!-- Username -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-2">Username</label>
+                    <input type="text" id="username" required class="input-field w-full px-4 py-3 rounded-xl text-white outline-none" placeholder="Choose a unique username">
+                </div>
 
-                <div class="grid grid-cols-1 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-300 mb-2">Username</label>
-                        <input type="text" id="username" required
-                            class="input-field w-full px-4 py-3 rounded-xl text-white outline-none"
-                            placeholder="Choose a unique username">
+                <!-- Email -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-2">Email Address</label>
+                    <input type="email" id="email" required class="input-field w-full px-4 py-3 rounded-xl text-white outline-none" placeholder="your@email.com">
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-2">Password</label>
+                    <div class="relative">
+                        <input type="password" id="password" required class="input-field w-full px-4 py-3 pr-12 rounded-xl text-white outline-none" placeholder="••••••••" oninput="checkStrength(this.value)">
+                        <button type="button" onclick="togglePass('password', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white">
+                            <i class="fas fa-eye"></i>
+                        </button>
                     </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-300 mb-2">Password</label>
-                            <input type="password" id="password" required
-                                class="input-field w-full px-4 py-3 rounded-xl text-white outline-none"
-                                placeholder="••••••••">
+                    <!-- Strength meter -->
+                    <div class="mt-2 space-y-1">
+                        <div class="flex gap-1">
+                            <div id="s1" class="strength-bar flex-1 bg-slate-700"></div>
+                            <div id="s2" class="strength-bar flex-1 bg-slate-700"></div>
+                            <div id="s3" class="strength-bar flex-1 bg-slate-700"></div>
+                            <div id="s4" class="strength-bar flex-1 bg-slate-700"></div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-300 mb-2">Confirm</label>
-                            <input type="password" id="confirmPassword" required
-                                class="input-field w-full px-4 py-3 rounded-xl text-white outline-none"
-                                placeholder="••••••••">
-                        </div>
+                        <p id="strengthLabel" class="text-xs text-slate-500"></p>
+                        <p id="strengthTip" class="text-xs text-slate-600 italic"></p>
                     </div>
                 </div>
 
-                <div class="mb-4">
+                <!-- Confirm Password -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-2">Confirm Password</label>
+                    <div class="relative">
+                        <input type="password" id="confirmPassword" required class="input-field w-full px-4 py-3 pr-12 rounded-xl text-white outline-none" placeholder="••••••••">
+                        <button type="button" onclick="togglePass('confirmPassword', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div>
                     <label class="block text-sm font-semibold text-slate-300 mb-2 flex justify-between items-center">
                         <span>Farm Address (Optional)</span>
-                        <button type="button" onclick="window.detectLocation()"
-                            class="text-[10px] text-brand-500 hover:text-brand-400 font-bold uppercase tracking-widest flex items-center gap-1 transition-all">
-                            <i class="fas fa-location-crosshairs"></i>
-                            Auto-Detect
+                        <button type="button" onclick="detectLocation()" class="text-[10px] text-brand-500 hover:text-brand-400 font-bold uppercase tracking-widest flex items-center gap-1">
+                            <i class="fas fa-location-crosshairs"></i> Auto-Detect
                         </button>
                     </label>
-                    <textarea id="address" rows="3"
-                        class="input-field w-full px-4 py-3 rounded-xl text-white outline-none"
-                        placeholder="e.g. 124 Rural Valley, District, State"></textarea>
+                    <textarea id="address" rows="2" class="input-field w-full px-4 py-3 rounded-xl text-white outline-none" placeholder="e.g. 124 Rural Valley, District, State"></textarea>
                 </div>
 
+                <!-- Profile Picture -->
                 <div>
                     <label class="block text-sm font-semibold text-slate-300 mb-2">Profile Picture (Optional)</label>
-                    <div class="flex items-center gap-6 p-4 rounded-xl bg-slate-900/50 border border-slate-800">
-                        <div class="relative w-20 h-20 group">
-                            <img id="preview" src="https://ui-avatars.com/api/?name=User&background=10b981&color=fff"
-                                class="w-full h-full rounded-2xl object-contain border-2 border-slate-700 group-hover:border-brand-500 transition-all">
-                            <label for="profilePic"
-                                class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 cursor-pointer transition-all">
-                                <i class="fas fa-camera text-white"></i>
-                                <input type="file" id="profilePic" accept="image/*" class="hidden"
-                                    onchange="previewImage(this)">
+                    <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-900/50 border border-slate-800">
+                        <div class="relative w-16 h-16 group">
+                            <img id="preview" src="https://ui-avatars.com/api/?name=User&background=10b981&color=fff" class="w-full h-full rounded-xl object-cover border-2 border-slate-700 group-hover:border-brand-500 transition-all">
+                            <label for="profilePic" class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 cursor-pointer transition-all">
+                                <i class="fas fa-camera text-white text-sm"></i>
+                                <input type="file" id="profilePic" accept="image/*" class="hidden" onchange="previewImage(this)">
                             </label>
                         </div>
-                        <div class="flex flex-col">
+                        <div>
                             <span class="text-sm font-bold text-slate-300">Upload Image</span>
-                            <span class="text-xs text-slate-500">JPG, PNG up to 5MB</span>
+                            <p class="text-xs text-slate-500">JPG, PNG up to 5MB</p>
                         </div>
                     </div>
                 </div>
 
-                <button type="submit"
-                    class="btn-primary w-full py-4 mt-6 rounded-xl text-white font-bold tracking-wide text-lg shadow-lg">
+                <button type="submit" class="btn-primary w-full py-4 mt-2 rounded-xl text-white font-bold tracking-wide text-lg shadow-lg">
                     Create Account
                 </button>
 
-                <p class="text-center text-slate-400 mt-6 font-medium">
-                    Already have an account? <a href="/login-page" class="text-brand-500 hover:text-brand-400">Log
-                        In</a>
+                <p class="text-center text-slate-400 mt-4 font-medium">
+                    Already have an account? <a href="/login-page" class="text-brand-500 hover:text-brand-400">Log In</a>
                 </p>
             </form>
         </div>
     </div>
 
     <script>
+        // ---- EmailJS config (read from meta or hardcode after filling .env) ----
+        // These will be injected from sessionStorage after you fill .env
+        const EMAILJS_PUBLIC_KEY       = 'YOUR_EMAILJS_PUBLIC_KEY';
+        const EMAILJS_SERVICE_ID       = 'YOUR_EMAILJS_SERVICE_ID';
+        const EMAILJS_WELCOME_TEMPLATE = 'YOUR_WELCOME_TEMPLATE_ID';
+        const EMAILJS_VERIFY_TEMPLATE  = 'YOUR_VERIFY_TEMPLATE_ID';
+
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function (e) {
-                    document.getElementById('preview').src = e.target.result;
-                }
+                reader.onload = e => document.getElementById('preview').src = e.target.result;
                 reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function togglePass(id, btn) {
+            const input = document.getElementById(id);
+            const isPass = input.type === 'password';
+            input.type = isPass ? 'text' : 'password';
+            btn.innerHTML = `<i class="fas fa-eye${isPass ? '-slash' : ''}"></i>`;
+        }
+
+        function generateStrongPassword() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%';
+            return Array.from({length: 14}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+        }
+
+        function checkStrength(val) {
+            const bars = [document.getElementById('s1'), document.getElementById('s2'),
+                          document.getElementById('s3'), document.getElementById('s4')];
+            const label = document.getElementById('strengthLabel');
+            const tip   = document.getElementById('strengthTip');
+
+            bars.forEach(b => { b.style.backgroundColor = '#334155'; });
+
+            if (!val) { label.textContent = ''; tip.textContent = ''; return; }
+
+            let score = 0;
+            const tips = [];
+            if (val.length >= 8)  score++; else tips.push('at least 8 characters');
+            if (/[A-Z]/.test(val)) score++; else tips.push('an uppercase letter');
+            if (/[0-9]/.test(val)) score++; else tips.push('a number');
+            if (/[^A-Za-z0-9]/.test(val)) score++; else tips.push('a special character (!@#$)');
+
+            const colors = ['#ef4444','#f97316','#eab308','#10b981'];
+            const labels = ['Weak','Fair','Good','Strong'];
+            for (let i = 0; i < score; i++) bars[i].style.backgroundColor = colors[score - 1];
+            label.textContent = labels[score - 1] || '';
+            label.style.color = colors[score - 1] || '#64748b';
+
+            if (tips.length > 0) {
+                tip.textContent = `Add ${tips.join(', ')} — or use: ${generateStrongPassword()}`;
+            } else {
+                tip.textContent = '✓ Strong password!';
+                tip.style.color = '#10b981';
             }
         }
 
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
+            const confirm  = document.getElementById('confirmPassword').value;
+            if (password !== confirm) { showToast('Passwords do not match!', 'error'); return; }
+            if (password.length < 8)  { showToast('Password must be at least 8 characters', 'error'); return; }
 
-            if (password !== confirmPassword) {
-                showError("Passwords do not match!");
-                return;
-            }
-
-            const btn = e.target.querySelector('button');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Creating...';
             btn.disabled = true;
 
             const formData = new FormData();
             formData.append('username', document.getElementById('username').value);
+            formData.append('email',    document.getElementById('email').value);
             formData.append('password', password);
-            formData.append('address', document.getElementById('address').value);
-
-            const fileInput = document.getElementById('profilePic');
-            if (fileInput.files[0]) {
-                formData.append('profile_picture', fileInput.files[0]);
-            }
+            formData.append('address',  document.getElementById('address').value);
+            const pic = document.getElementById('profilePic');
+            if (pic.files[0]) formData.append('profile_picture', pic.files[0]);
 
             try {
-                const res = await fetch('/register', {
-                    method: 'POST', body: formData
-                });
-
+                const res  = await fetch('/register', { method: 'POST', body: formData });
                 const data = await res.json();
+
                 if (res.ok) {
-                    window.location.href = '/login-page';
+                    // Store pending data for verify page
+                    sessionStorage.setItem('pending_register', JSON.stringify({
+                        username: data.username,
+                        email:    data.email,
+                        otp:      data.otp,
+                        emailjs_public_key:       EMAILJS_PUBLIC_KEY,
+                        emailjs_service_id:       EMAILJS_SERVICE_ID,
+                        emailjs_verify_template_id: EMAILJS_VERIFY_TEMPLATE
+                    }));
+
+                    // Send welcome email
+                    try {
+                        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_WELCOME_TEMPLATE, {
+                            to_email: data.email,
+                            to_name:  data.username
+                        });
+                    } catch(emailErr) { console.warn('Welcome email failed:', emailErr); }
+
+                    window.location.href = '/verify';
                 } else {
-                    showError(data.detail || 'Registration failed');
+                    showToast(data.detail || 'Registration failed', 'error');
                 }
             } catch (err) {
-                showError('An error occurred. Is the backend running?');
+                showToast('Server error. Is the backend running?', 'error');
             } finally {
-                btn.innerHTML = originalText;
+                btn.innerHTML = 'Create Account';
                 btn.disabled = false;
             }
         });
 
-        window.detectLocation = () => {
-            if (!navigator.geolocation) {
-                showError("Geolocation is not supported by your browser");
-                return;
-            }
-
-            const btn = document.querySelector('button[onclick="window.detectLocation()"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Detecting...';
-            btn.disabled = true;
-
-            navigator.geolocation.getCurrentPosition(async (position) => {
-                const { latitude, longitude } = position.coords;
+        function detectLocation() {
+            if (!navigator.geolocation) { showToast('Geolocation not supported', 'error'); return; }
+            navigator.geolocation.getCurrentPosition(async pos => {
                 try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                    const data = await res.json();
-                    if (data.display_name) {
-                        document.getElementById('address').value = data.display_name;
-                    } else {
-                        showError("Could not resolve address location");
-                    }
-                } catch (err) {
-                    showError("Location service error");
-                } finally {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                }
-            }, (err) => {
-                showError("Location access denied. Please allow location permissions.");
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            });
-        };
+                    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+                    const d = await r.json();
+                    if (d.display_name) document.getElementById('address').value = d.display_name;
+                } catch { showToast('Location error', 'error'); }
+            }, () => showToast('Location access denied', 'error'));
+        }
 
-        function showError(msg) {
+        function showToast(msg, type = 'success') {
             const div = document.createElement('div');
-            div.className = 'fixed top-6 right-6 bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-4 rounded-xl backdrop-blur-md shadow-2xl animate-fadeIn z-50';
-            div.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i> ${msg}`;
+            const c = type === 'success' ? 'bg-brand-500/10 border-brand-500/20 text-brand-500' : 'bg-red-500/10 border-red-500/20 text-red-400';
+            div.className = `fixed top-6 right-6 ${c} border px-6 py-4 rounded-xl backdrop-blur-md shadow-2xl z-50 animate-fadeIn`;
+            div.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':'exclamation-circle'} mr-2"></i>${msg}`;
             document.body.appendChild(div);
             setTimeout(() => div.remove(), 4000);
         }
     </script>
 </body>
-
 </html>

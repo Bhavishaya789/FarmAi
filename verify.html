@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmAI | Verify Email</title>
+    <link rel="icon" type="image/png" href="logo/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans','sans-serif'], display: ['Outfit','sans-serif'] }, colors: { brand: { 500: '#10b981', 600: '#059669' }, deep: '#020617' } } }
+        }
+    </script>
+    <style>
+        body { background-color: #020617; }
+        .input-field { background: rgba(30,41,59,0.5); border: 1px solid rgba(148,163,184,0.1); transition: all 0.3s; }
+        .input-field:focus { border-color: #10b981; box-shadow: 0 0 0 4px rgba(16,185,129,0.1); }
+        .otp-box { width: 52px; height: 60px; font-size: 1.5rem; text-align: center; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        .animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6 font-sans text-slate-200">
+    <div class="w-full max-w-md animate-fadeIn">
+        <div class="text-center mb-10">
+            <div class="w-16 h-16 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mx-auto mb-4 p-2">
+                <img src="logo/logo.png" class="w-full h-full object-contain">
+            </div>
+            <h1 class="font-display text-3xl font-bold text-white mb-2">Verify Your Email</h1>
+            <p class="text-slate-400 text-sm">We sent a 6-digit code to <span id="emailDisplay" class="text-brand-500 font-semibold"></span></p>
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-8">
+            <div class="flex justify-center gap-3 mb-8" id="otpInputs">
+                <input class="input-field otp-box rounded-xl text-white outline-none" maxlength="1" type="text" inputmode="numeric">
+                <input class="input-field otp-box rounded-xl text-white outline-none" maxlength="1" type="text" inputmode="numeric">
+                <input class="input-field otp-box rounded-xl text-white outline-none" maxlength="1" type="text" inputmode="numeric">
+                <input class="input-field otp-box rounded-xl text-white outline-none" maxlength="1" type="text" inputmode="numeric">
+                <input class="input-field otp-box rounded-xl text-white outline-none" maxlength="1" type="text" inputmode="numeric">
+                <input class="input-field otp-box rounded-xl text-white outline-none" maxlength="1" type="text" inputmode="numeric">
+            </div>
+
+            <button id="verifyBtn" onclick="verifyOTP()"
+                class="w-full py-4 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 text-white font-bold text-lg tracking-wide hover:-translate-y-0.5 transition-all shadow-lg shadow-brand-500/20">
+                Verify & Continue
+            </button>
+
+            <div class="mt-6 text-center">
+                <p class="text-slate-500 text-sm">Didn't receive the code?
+                    <button id="resendBtn" onclick="resendOTP()" class="text-brand-500 hover:text-brand-400 font-semibold ml-1">Resend</button>
+                </p>
+                <p id="timer" class="text-slate-600 text-xs mt-2"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Read pending registration data
+        const pending = JSON.parse(sessionStorage.getItem('pending_register') || '{}');
+        if (!pending.username) window.location.href = '/register-page';
+
+        document.getElementById('emailDisplay').textContent = pending.email || '';
+
+        // EmailJS init
+        emailjs.init(pending.emailjs_public_key || '');
+
+        // OTP box auto-advance
+        const boxes = document.querySelectorAll('#otpInputs input');
+        boxes.forEach((box, i) => {
+            box.addEventListener('input', () => {
+                box.value = box.value.replace(/\D/g, '');
+                if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+            });
+            box.addEventListener('keydown', e => {
+                if (e.key === 'Backspace' && !box.value && i > 0) boxes[i - 1].focus();
+            });
+        });
+
+        function getOTPValue() {
+            return [...boxes].map(b => b.value).join('');
+        }
+
+        async function verifyOTP() {
+            const otp = getOTPValue();
+            if (otp.length !== 6) { showToast('Enter all 6 digits', 'error'); return; }
+
+            const btn = document.getElementById('verifyBtn');
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: pending.username, otp })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('token', data.access_token);
+                    sessionStorage.removeItem('pending_register');
+                    showToast('Email verified! Welcome to FarmAI 🌾', 'success');
+                    setTimeout(() => window.location.href = '/', 1500);
+                } else {
+                    showToast(data.detail || 'Invalid OTP', 'error');
+                    btn.innerHTML = 'Verify & Continue';
+                    btn.disabled = false;
+                }
+            } catch {
+                showToast('Server error', 'error');
+                btn.innerHTML = 'Verify & Continue';
+                btn.disabled = false;
+            }
+        }
+
+        async function resendOTP() {
+            const btn = document.getElementById('resendBtn');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            try {
+                const res = await fetch('/resend-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: pending.username })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    pending.otp = data.otp;
+                    sessionStorage.setItem('pending_register', JSON.stringify(pending));
+                    await sendOTPEmail(data.otp);
+                    showToast('New OTP sent to your email', 'success');
+                    startTimer();
+                }
+            } catch { showToast('Failed to resend', 'error'); }
+            finally { btn.textContent = 'Resend'; btn.disabled = false; }
+        }
+
+        async function sendOTPEmail(otp) {
+            try {
+                await emailjs.send(pending.emailjs_service_id, pending.emailjs_verify_template_id, {
+                    to_email: pending.email,
+                    to_name: pending.username,
+                    otp_code: otp
+                });
+            } catch(e) { console.warn('EmailJS error:', e); }
+        }
+
+        // Send OTP on page load
+        window.addEventListener('load', async () => {
+            if (pending.otp) await sendOTPEmail(pending.otp);
+            startTimer();
+        });
+
+        let timerInterval;
+        function startTimer() {
+            clearInterval(timerInterval);
+            let secs = 60;
+            const timerEl = document.getElementById('timer');
+            const resendBtn = document.getElementById('resendBtn');
+            resendBtn.disabled = true;
+            timerInterval = setInterval(() => {
+                timerEl.textContent = `Resend available in ${secs}s`;
+                secs--;
+                if (secs < 0) {
+                    clearInterval(timerInterval);
+                    timerEl.textContent = '';
+                    resendBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        function showToast(msg, type = 'success') {
+            const div = document.createElement('div');
+            const color = type === 'success' ? 'bg-brand-500/10 border-brand-500/20 text-brand-500' : 'bg-red-500/10 border-red-500/20 text-red-400';
+            div.className = `fixed top-6 right-6 ${color} border px-6 py-4 rounded-xl backdrop-blur-md shadow-2xl z-50 animate-fadeIn`;
+            div.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>${msg}`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 4000);
+        }
+    </script>
+</body>
+</html>

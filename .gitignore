@@ -138,6 +138,12 @@ celerybeat.pid
 .env
 .envrc
 .venv
+
+# Project specific
+sql_app.db
+static/uploads/
+android_app/static/uploads/
+.env
 env/
 venv/
 ENV/

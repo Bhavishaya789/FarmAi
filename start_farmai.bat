@@ -1,43 +1,55 @@
 @echo off
-setlocal enabledelayedexpansion
+title FarmAI - Crop Recommendation System
+color 0A
 
-echo ========================================
-echo   FarmAI - Crop Recommendation System
-echo ========================================
+echo.
+echo  ========================================
+echo    FarmAI - Crop Recommendation System
+echo  ========================================
 echo.
 
-REM Check if .venv exists
-if not exist ".venv" (
-    echo Creating virtual environment...
-    python -m venv .venv
+REM Change to the directory where this bat file is located
+cd /d "%~dp0"
+
+REM Check if Python is installed
+python --version >nul 2>&1
+if errorlevel 1 (
+    echo  [ERROR] Python is not installed or not in PATH.
+    echo  Please install Python from https://python.org
+    pause
+    exit /b 1
 )
 
-REM Install dependencies
-echo Checking dependencies...
-".venv\Scripts\python.exe" -m pip install -r requirements.txt
+REM Fix bcrypt compatibility issue and install all deps
+echo  [1/3] Checking dependencies...
+python -m pip install "bcrypt==4.0.1" --quiet
+python -m pip install -r requirements.txt --quiet
+if errorlevel 1 (
+    echo  [ERROR] Failed to install dependencies.
+    pause
+    exit /b 1
+)
 
+echo  [2/3] Starting FarmAI backend server...
 echo.
-echo Starting backend server...
-echo.
 
-REM Start the FastAPI server in a new window
-start "FarmAI Backend Server" cmd /k ".\.venv\Scripts\python.exe -m uvicorn crop:app --reload --port 8000"
+REM Start the server in a new visible window
+start "FarmAI Server" cmd /k "cd /d "%~dp0" && python -m uvicorn crop:app --host 127.0.0.1 --port 8000"
 
-REM Wait for server to start
-timeout /t 5 /nobreak >nul
+REM Wait for server to boot up
+timeout /t 3 /nobreak >nul
 
-REM Open the web interface via HTTP
-echo.
-echo Opening web interface in your browser...
+REM Open browser
+echo  [3/3] Opening browser...
 start "" "http://127.0.0.1:8000"
 
 echo.
-echo ========================================
-echo   FarmAI is now running!
-echo ========================================
+echo  ========================================
+echo    FarmAI is running!
+echo    URL: http://127.0.0.1:8000
+echo  ========================================
 echo.
-echo Backend & UI: http://127.0.0.1:8000
+echo  Keep the "FarmAI Server" window open.
+echo  Close it to stop the server.
 echo.
-echo Press any key to finish setup...
-pause >nul
-exit
+pause
