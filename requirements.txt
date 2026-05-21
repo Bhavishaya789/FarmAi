@@ -20,7 +20,6 @@ Pillow==10.4.0
 torch==2.1.0
 torchvision==0.16.0
 transformers==4.36.0
-gTTS
 # Vision & PDF Tools (Production Headless)
 # Use headless to avoid GUI-based OOM/Crash on Render/Railway
 opencv-python-headless==4.10.0.84
