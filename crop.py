@@ -44,15 +44,27 @@ GROK_API_KEY = os.getenv("GROK_API_KEY", "")
 # ----------------------------------------
 # FASTAPI APP
 # ----------------------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = FastAPI()
 
-# ✅ FIX 2: Wrap StaticFiles mount in try/except — Vercel serverless has no writable root dir
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+# Safe static file mounts
 try:
-    _static_dir = os.path.join(os.path.dirname(__file__), "static")
+    _static_dir = os.path.join(BASE_DIR, "static")
     if os.path.isdir(_static_dir):
         app.mount("/static", StaticFiles(directory=_static_dir), name="static")
+    _logo_dir = os.path.join(BASE_DIR, "logo")
+    if os.path.isdir(_logo_dir):
+        app.mount("/logo", StaticFiles(directory=_logo_dir), name="logo")
 except Exception:
-    pass  # Static files not available in serverless environment
+    pass
 
 # ----------------------------------------
 # MONGODB
@@ -127,7 +139,6 @@ def load_model():
     import os
     import joblib
 
-    BASE_DIR = os.path.dirname(__file__)
     model_path = os.path.join(BASE_DIR, "crop_model.joblib")
 
     if os.path.exists(model_path):
@@ -135,10 +146,14 @@ def load_model():
             data = joblib.load(model_path)
             if "accuracy" in data:
                 return data["model"], data["features"], data["accuracy"]
-        except:
-            pass
+        except Exception as _e:
+            print("Model load warning:", _e)
 
-    return train_and_persist_model()
+    try:
+        return train_and_persist_model()
+    except Exception as _e:
+        print("Training fallback failed:", _e)
+        return None, ["N", "P", "K", "temperature", "humidity", "ph", "rainfall"], 0.0
 
 model, feature_names, model_accuracy = load_model()
 
@@ -170,22 +185,16 @@ CROP_ECONOMICS = {
     "default": {"yield": "Varied (approx 2-5 tons)", "profit": "₹30,000-₹60,000"}
 }
 
-# ----------------------------------------
-# APP
-# ----------------------------------------
-app = FastAPI()
-
-os.makedirs("static/uploads", exist_ok=True)
-app.mount("/static", StaticFiles(directory="static"), name="static")
-app.mount("/logo",   StaticFiles(directory="logo"),   name="logo")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
-)
+# Ensure uploads directory exists (use /tmp on serverless environments)
+UPLOAD_DIR = os.path.join(BASE_DIR, "static", "uploads")
+try:
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+except Exception:
+    UPLOAD_DIR = "/tmp/uploads"
+    try:
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+    except Exception:
+        pass
 
 # ----------------------------------------
 # PYDANTIC MODELS
@@ -258,10 +267,13 @@ def register(
     picture_path = None
     if profile_picture and profile_picture.filename:
         ext = profile_picture.filename.split(".")[-1]
-        fname = f"{username}_profile.{ext}"
-        with open(f"static/uploads/{fname}", "wb") as f:
-            shutil.copyfileobj(profile_picture.file, f)
-        picture_path = f"uploads/{fname}"
+        try:
+            target_path = os.path.join(UPLOAD_DIR, fname)
+            with open(target_path, "wb") as f:
+                shutil.copyfileobj(profile_picture.file, f)
+            picture_path = f"uploads/{fname}"
+        except Exception:
+            picture_path = None
 
     otp = generate_otp()
     otp_col.delete_many({"username": username})
@@ -841,58 +853,58 @@ Be specific and practical."""
 # ----------------------------------------
 
 @app.get("/")
-def serve_home(): return FileResponse("crop ui.html")
+def serve_home(): return FileResponse(os.path.join(BASE_DIR, "crop ui.html"))
 
 @app.get("/login")
 @app.get("/login-page")
 @app.get("/login.html")
-def serve_login(): return FileResponse("login.html")
+def serve_login(): return FileResponse(os.path.join(BASE_DIR, "login.html"))
 
 @app.get("/register")
 @app.get("/register-page")
 @app.get("/register.html")
-def serve_register(): return FileResponse("register.html")
+def serve_register(): return FileResponse(os.path.join(BASE_DIR, "register.html"))
 
 @app.get("/verify")
 @app.get("/verify-page")
 @app.get("/verify.html")
-def serve_verify(): return FileResponse("verify.html")
+def serve_verify(): return FileResponse(os.path.join(BASE_DIR, "verify.html"))
 
 @app.get("/profile")
 @app.get("/profile-page")
 @app.get("/profile.html")
-def serve_profile(): return FileResponse("profile.html")
+def serve_profile(): return FileResponse(os.path.join(BASE_DIR, "profile.html"))
 
 @app.get("/results")
 @app.get("/results-page")
 @app.get("/results.html")
-def serve_results(): return FileResponse("results.html")
+def serve_results(): return FileResponse(os.path.join(BASE_DIR, "results.html"))
 
 @app.get("/change-password")
 @app.get("/change-password-page")
 @app.get("/change_password.html")
-def serve_change_password(): return FileResponse("change_password.html")
+def serve_change_password(): return FileResponse(os.path.join(BASE_DIR, "change_password.html"))
 
 @app.get("/disease")
 @app.get("/disease-page")
 @app.get("/disease.html")
-def serve_disease(): return FileResponse("disease.html")
+def serve_disease(): return FileResponse(os.path.join(BASE_DIR, "disease.html"))
 
 @app.get("/history")
 @app.get("/history-page")
 @app.get("/history.html")
-def serve_history(): return FileResponse("history.html")
+def serve_history(): return FileResponse(os.path.join(BASE_DIR, "history.html"))
 
 @app.get("/fertilizer")
 @app.get("/fertilizer-page")
 @app.get("/fertilizer.html")
-def serve_fertilizer(): return FileResponse("fertilizer.html")
+def serve_fertilizer(): return FileResponse(os.path.join(BASE_DIR, "fertilizer.html"))
 
 @app.get("/chatbot.html")
-def serve_chatbot(): return FileResponse("chatbot.html")
+def serve_chatbot(): return FileResponse(os.path.join(BASE_DIR, "chatbot.html"))
 
 @app.get("/googlebf6a1bb40761389f.html")
-def serve_google_verification(): return FileResponse("googlebf6a1bb40761389f.html")
+def serve_google_verification(): return FileResponse(os.path.join(BASE_DIR, "googlebf6a1bb40761389f.html"))
 
 from typing import Dict, Any
 from explanation_engine import generate_farmer_explanation
@@ -954,7 +966,7 @@ from fastapi.responses import FileResponse
 
 @app.get("/favicon.ico")
 def favicon():
-    return FileResponse("favicon.ico")
+    return FileResponse(os.path.join(BASE_DIR, "favicon.ico"))
 if __name__ == "__main__":
     import uvicorn, os
     port = int(os.environ.get("PORT", 8000))
