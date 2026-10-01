@@ -1,13 +1,20 @@
 # FarmAI Backend - crop.py
-# Bhavishya kumar - 0251BTCS042
+# Bhavishaya kumar - 0251BTCS042
 # Atharv pandey  - 0251BTCS048
 # Dipanshu       - 0251BTCS140
 # Aditya singh   - 0251BTCS081
 
-from fastapi import FastAPI, HTTPException, File, UploadFile, Form
+import os, shutil, random, string
+from dotenv import load_dotenv
+
+# ✅ FIX 1: Call load_dotenv() BEFORE reading any env vars
+load_dotenv()
+
+from fastapi import FastAPI, HTTPException, File, UploadFile, Form, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 import numpy as np
 import pandas as pd
@@ -15,24 +22,16 @@ import joblib
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-import os, shutil, random, string
 import requests as http_requests
 from typing import Optional, List
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from jose import jwt
-from disease_model import predict_disease_from_image, predict_disease_multiple
-from disease_model import _safe_float
-# At the top of crop.py, replace your existing import line with:
-from intelligent_assistant import generate_ai_explanation, estimate_cost, generate_voice_base64
 from disease_model import predict_disease_from_image, predict_disease_multiple, _safe_float
+from intelligent_assistant import generate_ai_explanation, estimate_cost, generate_voice_base64
 from gradcam import generate_gradcam_overlay
 from pymongo import MongoClient
-from dotenv import load_dotenv
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-app = FastAPI()  
-app.mount("/static", StaticFiles(directory="."), name="static")
+
 # ----------------------------------------
 # CONFIG
 # ----------------------------------------
@@ -43,14 +42,37 @@ JWT_EXPIRE  = 60 * 24  # minutes
 GROK_API_KEY = os.getenv("GROK_API_KEY", "")
 
 # ----------------------------------------
+# FASTAPI APP
+# ----------------------------------------
+app = FastAPI()
+
+# ✅ FIX 2: Wrap StaticFiles mount in try/except — Vercel serverless has no writable root dir
+try:
+    _static_dir = os.path.join(os.path.dirname(__file__), "static")
+    if os.path.isdir(_static_dir):
+        app.mount("/static", StaticFiles(directory=_static_dir), name="static")
+except Exception:
+    pass  # Static files not available in serverless environment
+
+# ----------------------------------------
 # MONGODB
 # ----------------------------------------
-mongo_client     = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=10000)
-db_mongo         = mongo_client["farmai"]
-users_col        = db_mongo["users"]
-crop_hist_col    = db_mongo["crop_history"]
-disease_hist_col = db_mongo["disease_history"]
-otp_col          = db_mongo["otp_store"]
+# ✅ FIX 3: Wrap MongoDB in try/except — avoids 10-second hang if URI isn't set at build time
+try:
+    mongo_client     = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=5000)
+    db_mongo         = mongo_client["farmai"]
+    users_col        = db_mongo["users"]
+    crop_hist_col    = db_mongo["crop_history"]
+    disease_hist_col = db_mongo["disease_history"]
+    otp_col          = db_mongo["otp_store"]
+except Exception as _mongo_err:
+    print(f"[WARN] MongoDB connection failed at startup: {_mongo_err}")
+    mongo_client = None
+    db_mongo = None
+    users_col = None
+    crop_hist_col = None
+    disease_hist_col = None
+    otp_col = None
 
 # ----------------------------------------
 # AUTH HELPERS
@@ -63,9 +85,6 @@ def verify_password(p, h): return pwd_context.verify(p, h)
 def create_token(username: str):
     exp = datetime.utcnow() + timedelta(minutes=JWT_EXPIRE)
     return jwt.encode({"sub": username, "exp": exp}, JWT_SECRET, algorithm=JWT_ALGO)
-
-from fastapi.security import OAuth2PasswordBearer
-from fastapi import Depends
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login", auto_error=False)
 
