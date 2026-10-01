@@ -259,41 +259,50 @@ def register(
     address: Optional[str] = Form(None),
     profile_picture: Optional[UploadFile] = File(None)
 ):
-    if users_col.find_one({"username": username}):
-        raise HTTPException(status_code=400, detail="Username already taken")
-    if users_col.find_one({"email": email}):
-        raise HTTPException(status_code=400, detail="Email already registered")
+    if users_col is None:
+        raise HTTPException(status_code=503, detail="Database connection is not configured or unavailable.")
 
-    picture_path = None
-    if profile_picture and profile_picture.filename:
-        ext = profile_picture.filename.split(".")[-1]
-        try:
-            target_path = os.path.join(UPLOAD_DIR, fname)
-            with open(target_path, "wb") as f:
-                shutil.copyfileobj(profile_picture.file, f)
-            picture_path = f"uploads/{fname}"
-        except Exception:
-            picture_path = None
+    try:
+        if users_col.find_one({"username": username}):
+            raise HTTPException(status_code=400, detail="Username already taken")
+        if users_col.find_one({"email": email}):
+            raise HTTPException(status_code=400, detail="Email already registered")
 
-    otp = generate_otp()
-    otp_col.delete_many({"username": username})
-    otp_col.insert_one({
-        "username": username,
-        "otp": otp,
-        "expires": datetime.utcnow() + timedelta(minutes=10)
-    })
+        picture_path = None
+        if profile_picture and profile_picture.filename:
+            ext = profile_picture.filename.split(".")[-1]
+            fname = f"{username}_profile.{ext}"
+            try:
+                target_path = os.path.join(UPLOAD_DIR, fname)
+                with open(target_path, "wb") as f:
+                    shutil.copyfileobj(profile_picture.file, f)
+                picture_path = f"uploads/{fname}"
+            except Exception:
+                picture_path = None
 
-    users_col.insert_one({
-        "username": username,
-        "email": email,
-        "hashed_password": hash_password(password),
-        "address": address,
-        "profile_picture": picture_path,
-        "verified": False,
-        "created_at": datetime.utcnow()
-    })
+        otp = generate_otp()
+        otp_col.delete_many({"username": username})
+        otp_col.insert_one({
+            "username": username,
+            "otp": otp,
+            "expires": datetime.utcnow() + timedelta(minutes=10)
+        })
 
-    return {"status": "registered", "otp": otp, "email": email, "username": username}
+        users_col.insert_one({
+            "username": username,
+            "email": email,
+            "hashed_password": hash_password(password),
+            "address": address,
+            "profile_picture": picture_path,
+            "verified": False,
+            "created_at": datetime.utcnow()
+        })
+
+        return {"status": "registered", "otp": otp, "email": email, "username": username}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
 
 
 @app.post("/verify-otp")
