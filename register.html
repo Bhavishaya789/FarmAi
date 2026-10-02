@@ -162,7 +162,7 @@
                 <div>
                     <label class="block text-sm font-semibold text-slate-300 mb-2" for="password">Password</label>
                     <div class="relative">
-                        <input type="password" id="password" name="password" autocomplete="new-password" required
+                        <input type="password" id="password" name="password" autocomplete="new-password" required maxlength="72"
                             class="input-field w-full px-4 py-3 pr-12 rounded-xl text-white outline-none"
                             placeholder="••••••••" oninput="checkStrength(this.value)">
                         <button type="button" onclick="togglePass('password', this)"
@@ -187,7 +187,7 @@
                 <div>
                     <label class="block text-sm font-semibold text-slate-300 mb-2" for="confirmPassword">Confirm Password</label>
                     <div class="relative">
-                        <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required
+                        <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required maxlength="72"
                             class="input-field w-full px-4 py-3 pr-12 rounded-xl text-white outline-none"
                             placeholder="••••••••">
                         <button type="button" onclick="togglePass('confirmPassword', this)"
@@ -320,7 +320,7 @@
             const formData = new FormData();
             formData.append('username', document.getElementById('username').value);
             formData.append('email', document.getElementById('email').value);
-            formData.append('password', password);
+            formData.append('password', password.slice(0, 72));
             formData.append('address', document.getElementById('address').value);
             const pic = document.getElementById('profilePic');
             if (pic.files[0]) formData.append('profile_picture', pic.files[0]);

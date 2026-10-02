@@ -91,8 +91,18 @@ except Exception as _mongo_err:
 # ----------------------------------------
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def hash_password(p): return pwd_context.hash(p)
-def verify_password(p, h): return pwd_context.verify(p, h)
+def hash_password(p: str) -> str:
+    if isinstance(p, str):
+        p = p.encode("utf-8")[:72].decode("utf-8", errors="ignore")
+    return pwd_context.hash(p)
+
+def verify_password(p: str, h: str) -> bool:
+    if isinstance(p, str):
+        p = p.encode("utf-8")[:72].decode("utf-8", errors="ignore")
+    try:
+        return pwd_context.verify(p, h)
+    except Exception:
+        return False
 
 def create_token(username: str):
     exp = datetime.utcnow() + timedelta(minutes=JWT_EXPIRE)
